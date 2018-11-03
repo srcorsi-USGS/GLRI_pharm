@@ -1,8 +1,12 @@
+# scatter plots with concentration and number of chems vs %WW
+# Need to increase font size for x,y labels and axis labels
+
 library(ggplot2)
 library(ggrepel)
 library(tidyr)
 library(dplyr)
 library(toxEval)
+library(quantreg)
 
 df <- readxl::read_xlsx("raw_data/Initial Prospective Study Sites for WY18 Pharm and PFAS SamplingSRC.xlsx") %>%
   select(site=STAID, ww_percent = `Percent of streamflow attributable to WW`) %>%
@@ -12,6 +16,7 @@ df <- readxl::read_xlsx("raw_data/Initial Prospective Study Sites for WY18 Pharm
 # Concentration:
 path_to_file <- 'processed_data/pharm_data_concentrations.xlsx' 
 tox_list_conc <- create_toxEval(path_to_file)
+concentrations <- tox_list_conc$chem_data
 chemical_summary_conc <- get_chemical_summary(tox_list_conc)
 
 chem_sum_1 <- chemical_summary_conc %>%
@@ -27,25 +32,29 @@ chem_sum_2 <- chem_sum_1 %>%
             max_chem = max(n_chems)) %>%
   filter(!is.na(ww_percent))
 
+outliers <- which(chem_sum_2$sum_conc_max>15 | chem_sum_2$ww_percent>20)
+rq(chem_sum_2$sum_conc_max[-outliers]~chem_sum_2$ww_percent[-outliers])
 conc_plot <- ggplot() +
-  geom_point(data = chem_sum_2,
+  geom_point(data = chem_sum_2,colour="blue",cex=2,
              aes(x = ww_percent,
                  y = sum_conc_max)) +
+  geom_abline(intercept=0.217,slope=0.718,colour="forestgreen",size=1.) +
   geom_text_repel(data = filter(chem_sum_2, 
-                                sum_conc_max > 5 |
-                                  ww_percent > 0.1),
+                                sum_conc_max > 3 |
+                                  ww_percent > 5),
                   aes(x = ww_percent,
                       y = sum_conc_max,
-                      label = shortName)) +
-  scale_y_log10() +
-  scale_x_log10() +
+                      label = labels_included)) +
+#  scale_y_log10() +
+#  scale_x_log10() +
   xlab("Percent of streamflow attributable to WW") +
   ylab("Sum of concentration (of max sample)") +
   ggtitle("Wastewater % vs Sum of concentrations (max sample)")
 conc_plot
 
 dir.create("plots",showWarnings = FALSE)
-ggsave(conc_plot, filename = "plots/conc_log_labels.png", width = 8, height = 6)
+ggsave(conc_plot, filename = "plots/conc_labels.png", width = 8, height = 6)
+#ggsave(conc_plot, filename = "plots/conc_log_labels.png", width = 8, height = 6)
 
 chem_sum_3 <- chem_sum_1 %>%
   filter(EAR > 0) %>%
