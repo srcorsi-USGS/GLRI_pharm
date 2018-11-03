@@ -3,6 +3,8 @@
 #########################
 library(toxEval)
 library(ggplot2)
+library(dplyr)
+
 path_to_file <- 'processed_data/pharm_data.xlsx' 
 tox_list <- create_toxEval(path_to_file)
 
