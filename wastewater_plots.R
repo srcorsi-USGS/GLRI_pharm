@@ -34,23 +34,31 @@ chem_sum_2 <- chem_sum_1 %>%
 
 outliers <- which(chem_sum_2$sum_conc_max>15 | chem_sum_2$ww_percent>20)
 rq(chem_sum_2$sum_conc_max[-outliers]~chem_sum_2$ww_percent[-outliers])
+lm(chem_sum_2$sum_conc_max[-outliers]~chem_sum_2$ww_percent[-outliers])
+rq(chem_sum_2$sum_conc_max~chem_sum_2$ww_percent)
+lm(chem_sum_2$sum_conc_max~chem_sum_2$ww_percent)
+
+bold.text <- element_text(face = "bold", size=18,margin = margin(t = 12,b=12,r=12,l=12))
+
 conc_plot <- ggplot() +
   geom_point(data = chem_sum_2,colour="blue",cex=2,
              aes(x = ww_percent,
                  y = sum_conc_max)) +
-  geom_abline(intercept=0.217,slope=0.718,colour="forestgreen",size=1.) +
+  geom_abline(intercept=0.49,slope=0.577,colour="forestgreen",size=1.,linetype=2) +
   geom_text_repel(data = filter(chem_sum_2, 
                                 sum_conc_max > 3 |
                                   ww_percent > 5),
                   aes(x = ww_percent,
                       y = sum_conc_max,
-                      label = labels_included)) +
-#  scale_y_log10() +
-#  scale_x_log10() +
+                      label = shortName)) +
+  #  scale_y_log10() +
+  #  scale_x_log10() +
   xlab("Percent of streamflow attributable to WW") +
   ylab("Sum of concentration (of max sample)") +
-  ggtitle("Wastewater % vs Sum of concentrations (max sample)")
+  #  ggtitle("Wastewater % vs Sum of concentrations (max sample)") +
+  theme(title = bold.text, axis.text.y = bold.text,axis.text.x = bold.text)
 conc_plot
+
 
 dir.create("plots",showWarnings = FALSE)
 ggsave(conc_plot, filename = "plots/conc_labels.png", width = 8, height = 6)
