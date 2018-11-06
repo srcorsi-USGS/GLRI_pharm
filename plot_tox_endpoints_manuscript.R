@@ -139,8 +139,11 @@ plot_tox_endpoints_manuscript <- function(chemicalSummary,
     theme_minimal() +
     xlab("ToxCast Assay Name") +
     theme(axis.text.y = element_text(vjust = .25,hjust=1)) +
-    theme(legend.title = element_blank()) +
-    geom_boxplot(aes(x=endPoint, y=meanEAR, fill = has_AOP)) 
+    theme(legend.title = element_blank(),
+          legend.position = c(0.1, 0.95), 
+          legend.justification = c(0, 1), 
+          legend.background = element_rect(colour = NA, fill = "white")) +
+    geom_boxplot(aes(x=endPoint, y=meanEAR, fill = has_AOP), outlier.size = 0.5) 
   
   if(!is.na(hit_threshold)){
     stackedPlot <- stackedPlot +
@@ -194,7 +197,8 @@ plot_tox_endpoints_manuscript <- function(chemicalSummary,
 
   if(!is.na(font_size)){
     stackedPlot <- stackedPlot +
-      theme(axis.text = element_text(size = font_size))
+      theme(axis.text = element_text(size = font_size),
+            legend.text = element_text(size = font_size))
   }
   
   if(!is.na(title)){
@@ -208,7 +212,7 @@ plot_tox_endpoints_manuscript <- function(chemicalSummary,
   } 
   
   stackedPlot <- stackedPlot +
-        coord_flip()
+        coord_flip(clip = "off")
   
   return(stackedPlot)
 }
