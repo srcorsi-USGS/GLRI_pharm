@@ -1,6 +1,7 @@
 library(dplyr)
 library(toxEval)
 library(tidyr)
+library(ggplot2)
 
 ear_thresh <- 0.001
 siteThres <- 10
@@ -18,7 +19,7 @@ relevance <- read.csv("AOP_relevance.csv", stringsAsFactors = FALSE) %>%
 
 relevance$Relevant <- gsub("NO","No",relevance$Relevant)
 
-path_to_file <- 'pharm_data.xlsx' 
+path_to_file <- 'processed_data/pharm_data.xlsx' 
 tox_list <- create_toxEval(path_to_file)
 ACC <- get_ACC(tox_list$chem_info$CAS)
 ACC <- remove_flags(ACC = ACC,
