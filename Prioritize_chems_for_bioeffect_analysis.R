@@ -19,7 +19,12 @@ chem_detected <- chem_data %>%
             num_samples = sum(!is.na(Value)),
             num_detections = sum(Value>0))
 
-chem_detected <- left_join(chem_info[,c("CAS","parameter_nm")],chem_detected) %>%
+chem_detected <- left_join(chem_info[,c("CAS","parameter_nm")],chem_detected)
+
+toxcast_chem_matches <- tox_chemicals[which(tox_chemicals$Substance_CASRN %in% chem_info$CAS),]
+
+chem_detected <- left_join(chem_detected,toxcast_chem_matches,by = c("CAS"="Substance_CASRN")) %>%
   arrange(desc(conc_max))
+
 
 write.csv(chem_detected,file="./Analysis not pushed/Pharms_detected.csv",row.names = FALSE)

@@ -29,13 +29,12 @@ ACClong <- remove_flags(ACClong)
 cleaned_ep <- clean_endPoint_info(end_point_info)
 filtered_ep <- filter_groups(cleaned_ep)
 
+chemicalSummary <- get_chemical_summary(tox_list, ACClong, filtered_ep)
 unique(chemicalSummary$chnm) #46 total chemicals in toxcast
 
-chemicalSummary <- get_chemical_summary(tox_list, ACClong, filtered_ep)
-
-unique(chemicalSummary$chnm) #22 detected chemicals in toxcast
 chemicalSummary <- chemicalSummary %>%
   filter(EAR > 0)
+unique(chemicalSummary$chnm) #22 detected chemicals in toxcast
 
 length(unique(chemicalSummary$chnm)) #How many detected chems in toxcast = 22
 
